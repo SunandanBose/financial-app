@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import InputAdornment from '@mui/material/InputAdornment';
 import MyTable from './component/MyTable';
+import LabelValueDisplay from './component/LabelValueDisplay'
 
 const App = () => {
   const [amountToInvest, setAmountToInvest] = useState(0);
@@ -13,10 +14,15 @@ const App = () => {
   const [taxPercentage, setTaxPercentage] = useState(0);
   const [tableData, setTableData] = useState([]);
   const [inflation, setInflation] = useState(0);
-
-  
+  const [showSummary, setShowSummary] = useState(false);
+  const [totalPrincipal, setTotalPrincipal] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [finalAmountAfterTaxes, setFinalAmountAfterTaxes] = useState(0);
+  const [totalTaxPaid, setTotalTaxPaid] = useState(0);
+  const [totalInterestGained, setTotalInterestGained] = useState(0);
 
   const onSubmit = () => {
+    setShowSummary(false);
     if(amountToInvest === 0 || interestRate === 0 || termPeriod === 0)
       alert("Please Enter \n1. Amount to invest per month \n2. Rate Of Interest \n3. Term Period");
     
@@ -45,16 +51,39 @@ const App = () => {
         yearlyData["Yearly_Principal"] = yearlyPrincipal;
         yearlyData["Yearly_Final_Amount"] = yearlyFinalAmount;
         yearlyData["Yearly_Interest_Gained"] = (yearlyFinalAmount - yearlyPrincipal);
-        yearlyData["Tax"] = ((Number(taxPercentage) / 100) * (yearlyFinalAmount - yearlyPrincipal));
+        yearlyData["Tax"] = ((Number(taxPercentage) / 100) * (yearlyFinalAmount - yearlyPrincipal));  
       
         totalData.push(yearlyData);
     }
+    
     setTableData(totalData);
+    createSummary(totalData);
+    setShowSummary(true);
+  }
+
+  function createSummary(totalData){
+    let totalPrincipal = 0;
+    let taxPaid = 0;
+    let totalInterestGained = 0;
+    let finalAmount = 0;
+    for(let i = 0; i < totalData.length; i++) {
+      totalPrincipal += (totalData[i].Monthly_Principal *12);
+      taxPaid += totalData[i].Tax;
+      totalInterestGained += totalData[i].Yearly_Interest_Gained;
+      finalAmount = totalData[i].Yearly_Final_Amount;
+    }
+    setTotalPrincipal(totalPrincipal);
+    setFinalAmount(finalAmount);
+    setFinalAmountAfterTaxes(finalAmount - taxPaid);
+    setTotalTaxPaid(taxPaid);
+    setTotalInterestGained(totalInterestGained);
+    console.log("Total Principal : " + totalPrincipal);
+
   }
 
   return (
     <div className="App">
-      <div className="App-body">
+      <div id="input">
         <TextField
           label="Amount to invest per month"
           id="outlined-start-adornment-1"
@@ -105,7 +134,7 @@ const App = () => {
           value={taxPercentage}
           onChange={(e) => setTaxPercentage(e.target.value)}
         />
-        {/* <TextField
+        <TextField
           label="Inflation"
           id="outlined-start-adornment-2"
           sx={{ m: 1, width: '25ch' }}
@@ -114,12 +143,23 @@ const App = () => {
           }}
           value={inflation}
           onChange={(e) => setInflation(e.target.value)}
-        /> */}
+        />
+        <br />
         <Button variant="contained"
           sx={{ m: 1, width: '25ch' }}
           onClick={onSubmit}
-        >Submit</Button>
-
+        >Submit</Button>    
+        
+      </div>
+      { showSummary && (<div id="summary">
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Principal" value={totalPrincipal.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Tax gained" value={totalTaxPaid.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Interest gained" value={totalInterestGained.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }}label="Final Savings" value={finalAmount.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Tax paid" value={finalAmountAfterTaxes.toFixed(2)}/>
+      </div>
+      )}
+      <div id="table">
         <MyTable data={tableData} />
           
       </div>

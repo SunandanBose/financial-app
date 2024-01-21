@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .App-logo {
@@ -24,6 +27,28 @@
   color: white;
 }
 
+#input {
+  order: 1; /* Place on the left */
+  align-items: center;
+}
+
+#summary {
+  order: 2; 
+}
+
+#table {
+  order: 3; /* Place below both */
+}
+
+#input,
+#summary,
+#table {
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  flex-grow: 1;
+}
+
 .App-body {
   background-color: white;
   margin: 50px;
@@ -34,6 +59,7 @@
   justify-content: center; */
   font-size: calc(10px + 2vmin);
   color: white;
+  justify-content: space-between;
 }
 
 .App-link {
