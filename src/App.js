@@ -20,6 +20,8 @@ const App = () => {
   const [finalAmountAfterTaxes, setFinalAmountAfterTaxes] = useState(0);
   const [totalTaxPaid, setTotalTaxPaid] = useState(0);
   const [totalInterestGained, setTotalInterestGained] = useState(0);
+  const [amountAfterInflation, setAmountAfterInflation] = useState(0);
+  const [amountAfterInflationAfterTax, setAmountAfterInflationAfterTax] = useState(0);
 
   const onSubmit = () => {
     setShowSummary(false);
@@ -66,17 +68,23 @@ const App = () => {
     let taxPaid = 0;
     let totalInterestGained = 0;
     let finalAmount = 0;
+    let amountAfterInflation = 0
+    let amountAfterInflationAfterTax = 0
     for(let i = 0; i < totalData.length; i++) {
       totalPrincipal += (totalData[i].Monthly_Principal *12);
       taxPaid += totalData[i].Tax;
       totalInterestGained += totalData[i].Yearly_Interest_Gained;
       finalAmount = totalData[i].Yearly_Final_Amount;
     }
+    amountAfterInflation = finalAmount * Math.pow((1 - (inflation/100)), termPeriod);
+    amountAfterInflationAfterTax = (finalAmount - taxPaid) * Math.pow((1 - (inflation/100)), termPeriod);
     setTotalPrincipal(totalPrincipal);
     setFinalAmount(finalAmount);
     setFinalAmountAfterTaxes(finalAmount - taxPaid);
     setTotalTaxPaid(taxPaid);
     setTotalInterestGained(totalInterestGained);
+    setAmountAfterInflation(amountAfterInflation);
+    setAmountAfterInflationAfterTax(amountAfterInflationAfterTax);
     console.log("Total Principal : " + totalPrincipal);
 
   }
@@ -153,10 +161,13 @@ const App = () => {
       </div>
       { showSummary && (<div id="summary">
           <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Principal" value={totalPrincipal.toFixed(2)}/>
-          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Tax gained" value={totalTaxPaid.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Tax" value={totalTaxPaid.toFixed(2)}/>
           <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Interest gained" value={totalInterestGained.toFixed(2)}/>
           <LabelValueDisplay sx={{ m: 1, width: '25ch' }}label="Final Savings" value={finalAmount.toFixed(2)}/>
-          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Total Tax paid" value={finalAmountAfterTaxes.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Final Savings after Tax" value={finalAmountAfterTaxes.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Final Amount After Inflation" value={amountAfterInflation.toFixed(2)}/>
+          <LabelValueDisplay sx={{ m: 1, width: '25ch' }} label="Final Amount After Inflation After Tax" value={amountAfterInflationAfterTax.toFixed(2)}/>
+          
       </div>
       )}
       <div id="table">
