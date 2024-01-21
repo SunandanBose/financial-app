@@ -28,10 +28,7 @@ const App = () => {
         if(Number(perYearIncrement) > 0 && i != 0)
           monthlyIncrement = monthlyPrincipal * (Number(perYearIncrement) / 100);
 
-        let previousYearPrincipal = 0;
-        for(let i = 0; i < totalData.length; i++) {
-          previousYearPrincipal += totalData[i].Yearly_Final_Amount;
-        }
+        let previousYearPrincipal =  totalData[totalData.length - 1].Yearly_Final_Amount;;
         
         let yearlyPrincipal = ((monthlyPrincipal + monthlyIncrement) * 12 ) + previousYearPrincipal;
         previousIncrementAmount = (monthlyPrincipal + monthlyIncrement) - Number(amountToInvest);
